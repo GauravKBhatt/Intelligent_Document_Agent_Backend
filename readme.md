@@ -101,3 +101,48 @@ The system leverages cutting-edge tools such as **LangChain**, **vector database
     "date": "2025-06-25",
     "time": "14:00"
   }
+  ```
+- **Response:** JSON with booking confirmation details
+
+---
+
+## 🏁 How to Run (Step by Step)
+
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd Fast_Backend
+   ```
+
+2. **Create and activate a virtual environment**
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+   *(Create requirements.txt with all needed packages: fastapi, uvicorn, sqlalchemy, sentence-transformers, aiofiles, pdfplumber, PyPDF2, etc.)*
+
+4. **Copy and configure environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env as needed
+   ```
+
+5. **Initialize the database**
+   ```bash
+   python -c "from database.models import init_db; init_db()"
+   ```
+
+6. **Run the FastAPI server**
+   ```bash
+   uvicorn main:app --reload
+   ```
+
+7. **Access the API docs**
+   - Open [http://localhost:8000/docs](http://localhost:8000/docs) in your browser.
+
+---

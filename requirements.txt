@@ -1,0 +1,10 @@
+fastapi
+sqlalchemy
+aiofiles
+uvicorn
+sentence-transformers
+pdfplumber
+PyPDF2
+pydantic
+pydantic_settings
+python-dotenv
