@@ -136,6 +136,10 @@ The system leverages cutting-edge tools such as **LangChain**, **vector database
    ```bash
    python -c "from database.models import init_db; init_db()"
    ```
+6. **Start Qdrant**
+```bash
+docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
+```
 
 6. **Run the FastAPI server**
    ```bash
