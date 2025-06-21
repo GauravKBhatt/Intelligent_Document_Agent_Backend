@@ -20,10 +20,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
     # Email Configuration
-    SMTP_SERVER: str = os.getenv("SMTP_SERVER", "smtp.example.com")
+    SMTP_SERVER: str = os.getenv("SMTP_SERVER", "smtp.gmail.com")
     SMTP_PORT: int = int(os.getenv("SMTP_PORT", 587))
-    SMTP_USER: str = os.getenv("SMTP_USER", "user@example.com")
-    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "password")
-    ADMIN_EMAIL: str = os.getenv("ADMIN_EMAIL", "admin@example.com")
 
 settings = Settings()

@@ -37,7 +37,9 @@ class ChatResponse(BaseModel):
 
 class InterviewBookingRequest(BaseModel):
     full_name: str
-    email: EmailStr
+    email: EmailStr  # sender's email
+    email_password: str  # sender's email password (app password for Gmail)
+    destination_email: EmailStr  # recipient
     interview_date: str  # YYYY-MM-DD format
     interview_time: str  # HH:MM format
     message: Optional[str] = None
@@ -167,7 +169,9 @@ async def book_interview(
         body = f"Dear {request.full_name},\n\nYour interview is booked for {request.interview_date} at {request.interview_time}."
         background_tasks.add_task(
             email_service.send_confirmation,
-            to_email=settings.ADMIN_EMAIL,
+            smtp_user=request.email,
+            smtp_password=request.email_password,
+            to_email=request.destination_email,
             subject=subject,
             body=body
         )
