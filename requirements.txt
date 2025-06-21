@@ -8,3 +8,5 @@ PyPDF2
 pydantic
 pydantic_settings
 python-dotenv
+python-multipart
+pydantic[email]

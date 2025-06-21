@@ -43,7 +43,7 @@ app.include_router(rag_router, prefix="/api/v1/rag", tags=["RAG Agent"])
 async def startup_event():
     """Initialize database and connections on startup"""
     logger.info("Starting up RAG Backend System...")
-    await init_db()
+    init_db()  # <-- Just call it, do NOT await
     logger.info("Database initialized successfully")
 
 @app.on_event("shutdown")

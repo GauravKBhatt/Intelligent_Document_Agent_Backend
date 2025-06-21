@@ -13,6 +13,7 @@ from services.text_processor import TextProcessor
 from services.embedding_service import EmbeddingService
 from services.vector_store import VectorStoreService
 from config.settings import settings
+from database.models import SessionLocal
 
 router = APIRouter()
 
@@ -64,7 +65,10 @@ async def upload_file(
     # Generate unique filename
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
     file_path = os.path.join(settings.UPLOAD_DIR, unique_filename)
-    
+
+    # Ensure the upload directory exists
+    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+
     try:
         # Save file to disk
         async with aiofiles.open(file_path, 'wb') as f:

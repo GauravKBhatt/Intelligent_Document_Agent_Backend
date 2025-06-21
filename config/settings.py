@@ -11,14 +11,14 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "uploads"
     CHUNK_SIZE: int = 1000
     CHUNK_OVERLAP: int = 200
-    
+
     # Database Configuration
     VECTOR_DB: str = "qdrant"  # or pinecone, weaviate, milvus
     DATABASE_URL: str = "sqlite:///./test.db"
-    
+
     # Redis Configuration
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-    
+
     # Email Configuration
     SMTP_SERVER: str = os.getenv("SMTP_SERVER", "smtp.example.com")
     SMTP_PORT: int = int(os.getenv("SMTP_PORT", 587))

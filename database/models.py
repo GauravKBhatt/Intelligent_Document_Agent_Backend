@@ -1,3 +1,6 @@
+from config.settings import settings
+print("DEBUG: settings.DATABASE_URL =", settings.DATABASE_URL)
+
 # database/models.py - SQLAlchemy models and DB init
 from sqlalchemy import Column, Integer, String, Float, DateTime, Text, JSON, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship

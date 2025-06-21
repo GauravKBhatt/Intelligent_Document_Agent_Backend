@@ -137,4 +137,44 @@ async def save_conversation(
     except Exception as e:
         print(f"Error saving conversation: {str(e)}")
 
-@router.post("/book-interview", response_
+@router.post("/book-interview", response_model=InterviewBookingResponse)
+async def book_interview(
+    request: InterviewBookingRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    """
+    Book an interview with the agent's assistance
+    """
+    try:
+        # Create booking record
+        booking = InterviewBooking(
+            full_name=request.full_name,
+            email=request.email,
+            interview_date=request.interview_date,
+            interview_time=request.interview_time,
+            message=request.message,
+            status="pending"
+        )
+        db.add(booking)
+        db.commit()
+        db.refresh(booking)
+
+        # Send confirmation email in background
+        subject = "Interview Booking Confirmation"
+        body = f"Dear {request.full_name},\n\nYour interview is booked for {request.interview_date} at {request.interview_time}."
+        background_tasks.add_task(
+            email_service.send_confirmation,
+            to_email=settings.ADMIN_EMAIL,
+            subject=subject,
+            body=body
+        )
+
+        return InterviewBookingResponse(
+            booking_id=booking.id,
+            status="success",
+            message="Interview booked successfully.",
+            confirmation_sent=True
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error booking interview: {str(e)}")
