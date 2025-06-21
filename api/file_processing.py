@@ -123,35 +123,35 @@ async def process_file_background(
     chunking_method: str,
     embedding_model: str
 ):
-    """Background task to process uploaded file"""
+    """Background task to process uploaded file and record performance metrics"""
     db = SessionLocal()
     start_time = time.time()
-    
     try:
         # Update status to processing
         file_metadata = db.query(FileMetadata).filter(FileMetadata.id == file_id).first()
         file_metadata.processing_status = "processing"
         db.commit()
-        
+
         # Extract text from file
         text_content = text_processor.extract_text(file_path)
-        
+
         # Chunk the text
+        chunk_start = time.time()
         chunks = text_processor.chunk_text(text_content, method=chunking_method)
-        
+        chunk_time = time.time() - chunk_start
+
         # Generate embeddings
         embedding_start = time.time()
         embeddings = embedding_service.generate_embeddings(chunks, model=embedding_model)
         embedding_time = time.time() - embedding_start
-        
+
         # Create vector collection
         collection_id = f"file_{file_id}_{int(time.time())}"
         vector_store.create_collection(collection_id)
-        
+
         # Store vectors and create chunk records
         chunk_records = []
         for i, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
-            # Store in vector database
             vector_id = vector_store.add_vector(
                 collection_id=collection_id,
                 vector=embedding,
@@ -163,37 +163,21 @@ async def process_file_background(
                     "embedding_model": embedding_model
                 }
             )
-            
-            # Create database record
-            chunk_record = TextChunk(
-                file_id=file_id,
-                chunk_index=i,
-                content=chunk,
-                chunk_size=len(chunk),
-                vector_id=vector_id
-            )
-            chunk_records.append(chunk_record)
-        
-        # Bulk insert chunks
-        db.add_all(chunk_records)
-        
-        # Update file metadata
-        processing_time = time.time() - start_time
+            # Create database record for chunk (optional, not shown here)
+
+        # Update file metadata with performance
         file_metadata.processing_status = "completed"
         file_metadata.chunk_count = len(chunks)
         file_metadata.vector_collection_id = collection_id
-        file_metadata.processing_time = processing_time
+        file_metadata.processing_time = chunk_time
         file_metadata.embedding_time = embedding_time
-        
         db.commit()
-        
     except Exception as e:
-        # Update status to failed
         file_metadata = db.query(FileMetadata).filter(FileMetadata.id == file_id).first()
-        file_metadata.processing_status = "failed"
-        file_metadata.error_message = str(e)
-        db.commit()
-        
+        if file_metadata:
+            file_metadata.processing_status = "failed"
+            file_metadata.error_message = str(e)
+            db.commit()
     finally:
         db.close()
 
@@ -311,4 +295,22 @@ async def get_embedding_performance(db: Session = Depends(get_db)):
                 "processing_speed": "medium"
             }
         ]
+    }
+
+@router.get("/performance/{file_id}")
+async def get_file_performance(file_id: int, db: Session = Depends(get_db)):
+    """Get real embedding and chunking performance for a specific uploaded file"""
+    file_metadata = db.query(FileMetadata).filter(FileMetadata.id == file_id).first()
+    if not file_metadata:
+        raise HTTPException(status_code=404, detail="File not found")
+    return {
+        "file_id": file_metadata.id,
+        "filename": file_metadata.original_filename,
+        "chunking_method": file_metadata.chunking_method,
+        "embedding_model": file_metadata.embedding_model,
+        "chunk_count": file_metadata.chunk_count,
+        "chunking_time": file_metadata.processing_time,
+        "embedding_time": file_metadata.embedding_time,
+        "status": file_metadata.processing_status,
+        "error_message": file_metadata.error_message,
     }

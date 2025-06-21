@@ -10,3 +10,4 @@ pydantic_settings
 python-dotenv
 python-multipart
 pydantic[email]
+qdrant-client

@@ -1,0 +1,59 @@
+Data Cube / OLAP cube. Tables into cube making. visualizing. 
+Data mining , functionalities / Techniques
+Data Mining Technique
+Statistical Description of Data
+Data Type vs Data Attributes
+Properties of Attributes vs Types of Attributes 
+What do you understand by normalization in data mining or analytics. How is it different from the normalization of data warehousing ?
+
+Aspect	Data Mining /Analytics	                 Data Warehousing
+Goal	Scale features for modeling	         Organize schema to avoid redundancy
+Scope	Applied to numeric data	                 Applied to database schema
+Techniques   Min-Max, Z-score, Decimal Scaling	 Normal Forms (1NF to 5NF, BCNF)
+Impact	Improves ML model performance	         Improves storage efficiency & integrity
+Tools Uses  NumPy, pandas, scikit-learn	         SQL, DBMS design
+
+What can you understand data reduction ? WHy do we need it in data preprocessing ?
+
+Data reduction is a process in data preprocessing that involves reducing the volume of data while maintaining its integrity and analytical value. The goal is to make data smaller, faster to process, and easier to store, without significantly compromising on insights.
+
+Reason	                Explanation
+Performance	        Reduces computational cost for machine learning and analytics.
+Storage efficiency	Less disk or memory space is required.
+Faster processing	Smaller datasets are quicker to load, clean, and process.
+Noise reduction	        Removes irrelevant or redundant data, improving model accuracy.
+Scalability	        Makes it easier to handle large-scale (big) data.
+
+
+Data compression techniques (Lossless and Lossy)
+
+1. Lossless Compression
+Definition: No information is lost; the original data can be perfectly reconstructed.
+
+🔹 Common Techniques:
+Technique	                Description
+Run-Length Encoding (RLE)       Compresses sequences of repeated elements. Example: AAAABBBCC → 4A3B2C
+Huffman Coding	                Variable-length encoding; frequent items get shorter codes.
+Lempel-Ziv-Welch (LZW)	        Dictionary-based algorithm; used in PNG, GIF, and ZIP formats.
+Burrows-Wheeler Transform (BWT)	Rearranges data for better compression in tools like bzip2.
+Arithmetic Coding	        Encodes entire message into a single number between 0 and 1.
+
+2. Lossy Compression
+Definition: Some data is discarded; the reconstructed data is an approximation of the original.
+
+🔹 Common Techniques:
+Technique	               Description
+Transform Coding (e.g., DCT)   Converts data to frequency domain; keeps important frequencies (used in JPEG).
+Wavelet Compression	       Used for audio/image compression; discards small coefficients.
+Quantization	               Approximates similar values (used in audio, image codecs).
+Fractal Compression	       Encodes patterns in images using self-similarity.
+Psychoacoustic Modeling	       Removes inaudible sounds (used in MP3, AAC).
+
+Difference between data standardization and normalization.
+
+Feature	        Standardization	                Normalization
+Also Called	Z-score normalization	        Min-Max scaling
+Range	        Unbounded (mean = 0, std = 1)	Bounded (usually [0, 1])
+Sensitive to outliers	Less sensitive	        More sensitive
+When to use	Data follows Gaussian distribution	Data doesn't follow a normal distribution
+Algorithm examples	Linear regression, SVM, PCA	KNN, neural networks, clustering 
