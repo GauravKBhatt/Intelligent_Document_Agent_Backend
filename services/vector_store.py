@@ -22,12 +22,12 @@ class VectorStoreService:
             # In-memory fallback
             self.collections = {}
 
-    def create_collection(self, collection_id):
+    def create_collection(self, collection_id, distance: str = "Cosine"):
         if self.qdrant:
             if collection_id not in [c.name for c in self.qdrant.get_collections().collections]:
                 self.qdrant.recreate_collection(
                     collection_name=collection_id,
-                    vectors_config={"size": 384, "distance": "Cosine"}
+                    vectors_config={"size": 384, "distance": distance}
                 )
         else:
             if collection_id not in self.collections:

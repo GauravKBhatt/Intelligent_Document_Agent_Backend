@@ -96,10 +96,16 @@ The system leverages cutting-edge tools such as **LangChain**, **vector database
 - **Description:** Get cached performance metrics for different embedding models and chunking methods.
 - **Response:** JSON with model/method performance stats.
 
-### `/api/v1/files/performance/{file_id}`
+### `/api/v1/files/performance/file/{file_id}`
 - **Method:** GET
 - **Description:** Get actual chunking and embedding performance for a specific uploaded file.
 - **Response:** JSON with file-specific performance metrics.
+
+### `/api/v1/files/performance/similarity-search`
+- **Method:** GET
+- **Description:** Compare two similarity search algorithms (Cosine and Dot Product) supported by Qdrant on a given file's vector collection.
+- **Query Parameters:** `file_id` (int), `query` (string), `top_k` (int, optional)
+- **Response:** JSON with top-k results for both algorithms, their latencies, overlap, and a summary finding.
 
 ### `/api/v1/rag/chat`
 - **Method:** POST
@@ -196,3 +202,27 @@ docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
 > - The **recursive chunking** method with **all-MiniLM-L6-v2** provided lower latency (0.15s) and low memory usage, but slightly lower retrieval accuracy (82%).
 > - For applications where speed and resource efficiency are critical, recursive chunking with all-MiniLM-L6-v2 is recommended.
 > - For maximum retrieval accuracy, semantic chunking with all-mpnet-base-v2 is preferred, accepting a moderate increase in latency and memory usage.
+
+---
+
+## Similarity Search Algorithm Comparison: Cosine vs Dot Product
+
+Based on recent findings using Qdrant as the vector database:
+
+- **Cosine Similarity** (default for sentence-transformers):
+  - Returned 3 relevant results in 0.0254 seconds.
+  - Results included detailed chunk content and metadata.
+  - Cosine similarity is generally more stable for normalized embeddings and is the default for sentence-transformers.
+
+- **Dot Product Similarity**:
+  - Not available for this collection, as Dot Product search requires the collection to be created with `distance='Dot'`.
+  - To compare Dot Product, the file must be re-uploaded with Dot Product as the distance metric.
+
+**Overlap:**  
+- There was no overlap in top-k results since Dot Product search could not be performed on this collection.
+
+**Finding:**  
+- Cosine similarity search worked as expected and was fast (0.0254s).
+- Dot Product search is only supported if the collection was created with the appropriate distance metric.
+- For most use cases with normalized embeddings (such as those from sentence-transformers), Cosine similarity is recommended and is Qdrant's default.
+- If you wish to compare Dot Product, ensure your collection is created with `distance='Dot'`.

@@ -14,6 +14,7 @@ from services.embedding_service import EmbeddingService
 from services.vector_store import VectorStoreService
 from config.settings import settings
 from database.models import SessionLocal
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -297,7 +298,7 @@ async def get_embedding_performance(db: Session = Depends(get_db)):
         ]
     }
 
-@router.get("/performance/{file_id}")
+@router.get("/performance/file/{file_id}")
 async def get_file_performance(file_id: int, db: Session = Depends(get_db)):
     """Get real embedding and chunking performance for a specific uploaded file"""
     file_metadata = db.query(FileMetadata).filter(FileMetadata.id == file_id).first()
@@ -314,3 +315,65 @@ async def get_file_performance(file_id: int, db: Session = Depends(get_db)):
         "status": file_metadata.processing_status,
         "error_message": file_metadata.error_message,
     }
+
+@router.get("/performance/similarity-search")
+async def compare_similarity_search_algorithms(
+    file_id: int,
+    query: str,
+    top_k: int = 3,
+    db: Session = Depends(get_db)
+):
+    """
+    Compare Cosine and Dot Product similarity search in Qdrant and report findings.
+    """
+    file_metadata = db.query(FileMetadata).filter(FileMetadata.id == file_id).first()
+    if not file_metadata or not file_metadata.vector_collection_id:
+        raise HTTPException(status_code=404, detail="File or vector collection not found")
+    collection_id = file_metadata.vector_collection_id
+
+    # Only works if Qdrant is used
+    if not hasattr(vector_store, "qdrant") or vector_store.qdrant is None:
+        return JSONResponse(
+            status_code=400,
+            content={"detail": "Similarity search comparison only supported with Qdrant backend."}
+        )
+
+    # Prepare: get embedding for the query
+    query_emb = embedding_service.generate_embeddings([query])[0]
+
+    # Run Cosine similarity search
+    import time
+    cosine_start = time.time()
+    cosine_results = vector_store.qdrant.search(
+        collection_name=collection_id,
+        query_vector=query_emb,
+        limit=top_k,
+        search_params={"hnsw_ef": 128, "exact": False},
+        # Cosine is default for this collection
+    )
+    cosine_time = time.time() - cosine_start
+
+    # Dot Product search is not supported unless the collection was created with Dot Product distance.
+    # So, we warn the user and skip the dot product search.
+    findings = {
+        "cosine": {
+            "top_k": top_k,
+            "results": [p.payload for p in cosine_results],
+            "latency_sec": round(cosine_time, 4)
+        },
+        "dot_product": {
+            "warning": (
+                "Dot Product search is only supported if the collection was created with distance='Dot'. "
+                "Current collection uses Cosine. To compare, re-upload the file with Dot Product as the distance metric."
+            ),
+            "results": [],
+            "latency_sec": None
+        },
+        "overlap_in_top_k": 0,
+        "finding": (
+            "Cosine similarity is generally more stable for normalized embeddings and is the default for sentence-transformers. "
+            "Dot product search is not available for this collection. "
+            f"Cosine search took {round(cosine_time,4)}s."
+        )
+    }
+    return findings
