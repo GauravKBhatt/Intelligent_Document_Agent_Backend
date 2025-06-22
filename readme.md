@@ -25,10 +25,19 @@ The system leverages cutting-edge tools such as **LangChain**, **vector database
 - Store metadata (file name, chunking method, embedding model, etc.) in a relational/NoSQL DB.
 
 ### 2. **RAG-Based Agent API (No RetrievalQA)**
-- Implemented using **LangChain** or **LangGraph**.
-- Utilizes tool-based reasoning and memory (Redis or other).
+- Implemented using **LangChain**
+- Utilizes Redis.
 - Maintains conversation history across sessions.
 - Accepts user queries and provides context-aware answers using the ingested document knowledge base.
+- The RAG query format is as follows: 
+   {
+  "message": "string",
+  "session_id": "string",
+  "use_rag": true,
+  "max_tokens": 500,
+  "collection_name": "string"
+}
+- The collection name of the uploaded file could be found in http://localhost:6333/collections
 
 ### 3. **Interview Booking Endpoint**
 - Accepts user info as follows:
@@ -162,3 +171,17 @@ docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
  
  ** I have made it easier by creating a dockerfile. You can just create an image **
  
+ ##  Experimental Findings
+
+### 🔹 Chunking & Embedding Evaluation
+
+| Chunking Method | Embedding Model        | Retrieval Accuracy | Latency (s) | Memory Usage |
+|-----------------|-----------------------|-------------------|-------------|-------------|
+| Recursive       | all-MiniLM-L6-v2      | 82%               | 0.15        | low         |
+| Semantic        | all-mpnet-base-v2     | 89%               | 0.45        | medium      |
+
+> **Findings:**  
+> - The **semantic chunking** method combined with the **all-mpnet-base-v2** embedding model achieved the highest retrieval accuracy (89%), though with higher latency (0.45s) and medium memory usage.
+> - The **recursive chunking** method with **all-MiniLM-L6-v2** provided lower latency (0.15s) and low memory usage, but slightly lower retrieval accuracy (82%).
+> - For applications where speed and resource efficiency are critical, recursive chunking with all-MiniLM-L6-v2 is recommended.
+> - For maximum retrieval accuracy, semantic chunking with all-mpnet-base-v2 is preferred, accepting a moderate increase in latency and memory usage.
