@@ -1,4 +1,4 @@
-# 🧠 Intelligent Document Agent Backend (FastAPI)
+#  Intelligent Document Agent Backend (FastAPI)
 
 A modular and production-ready backend system built using **FastAPI** that provides two RESTful APIs:
 
@@ -9,7 +9,7 @@ The system leverages cutting-edge tools such as **LangChain**, **vector database
 
 ---
 
-## 🚀 Features
+##  Features
 
 ### 1. **Document Ingestion API**
 - Upload `.pdf` or `.txt` files.
@@ -46,7 +46,7 @@ The system leverages cutting-edge tools such as **LangChain**, **vector database
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Component         | Technology                |
 |------------------|---------------------------|
@@ -61,7 +61,7 @@ The system leverages cutting-edge tools such as **LangChain**, **vector database
 
 ---
 
-## 📊 Experimental Findings
+##  Experimental Findings
 
 ### 🔹 Chunking & Embedding Evaluation
 
@@ -71,7 +71,7 @@ The system leverages cutting-edge tools such as **LangChain**, **vector database
 | Semantic        | HuggingFace BGE  | 92%                 | 250          |
 | Custom Logic    | Cohere Embed     | 85%                 | 175          |
 
-> ✅ **Semantic chunking** showed the best retrieval accuracy, though it had slightly higher latency.
+>  **Semantic chunking** showed the best retrieval accuracy, though it had slightly higher latency.
 
 ---
 
@@ -82,11 +82,11 @@ The system leverages cutting-edge tools such as **LangChain**, **vector database
 | Cosine Similarity| 91%         | 200          | Good balance |
 | Dot Product      | 87%         | 160          | Faster, slightly less accurate |
 
-> ✅ **Cosine similarity** provided better overall results in Pinecone and Qdrant.
+>  **Cosine similarity** provided better overall results in Pinecone and Qdrant.
 
 ---
 
-## 📬 API Overview
+##  API Overview
 
 ### `/upload/`
 - **Method:** POST
@@ -115,7 +115,7 @@ The system leverages cutting-edge tools such as **LangChain**, **vector database
 
 ---
 
-## 🏁 How to Run (Step by Step)
+##  How to Run (Step by Step)
 
 1. **Clone the repository**
    ```bash
