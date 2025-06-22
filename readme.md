@@ -31,7 +31,16 @@ The system leverages cutting-edge tools such as **LangChain**, **vector database
 - Accepts user queries and provides context-aware answers using the ingested document knowledge base.
 
 ### 3. **Interview Booking Endpoint**
-- Accepts user info: Full Name, Email, Date, and Time.
+- Accepts user info as follows:
+   {
+  "full_name": "Your Name",
+  "email": "yourgmail@gmail.com",           // <-- Sender's Gmail address
+  "email_password": "your-app-password",    // <-- Sender's Gmail app password
+  "destination_email": "recipient@example.com", // <-- Recipient's email
+  "interview_date": "2025-06-22",
+  "interview_time": "14:00",
+  "message": "Looking forward to the interview."
+}
 - Stores booking in a database.
 - Sends confirmation via SMTP to the owner/admin email.
 
