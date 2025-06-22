@@ -160,5 +160,5 @@ docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
 
 ---
  
- ** I have made it easier by creating a dockerfile. You can jsut create an image **
+ ** I have made it easier by creating a dockerfile. You can just create an image **
  

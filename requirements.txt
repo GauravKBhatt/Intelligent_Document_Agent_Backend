@@ -11,3 +11,7 @@ python-dotenv
 python-multipart
 pydantic[email]
 qdrant-client
+langchain
+langchain-community
+redis
+langchain_openai

@@ -26,7 +26,7 @@ class ChatRequest(BaseModel):
     session_id: Optional[str] = None
     use_rag: bool = True
     max_tokens: int = 500
-    file_id: Optional[int] = None  # Allow user to specify which file to use
+    collection_name: Optional[str] = None  # Accept collection_name instead of file_id
 
 class ChatResponse(BaseModel):
     response: str
@@ -76,14 +76,14 @@ async def chat_with_agent(
         # Get conversation history from memory
         conversation_history = await memory_service.get_conversation_history(session_id)
         
-        # Process the message with the RAG agent, passing file_id
+        # Process the message with the RAG agent, passing collection_name
         agent_response = await rag_service.process_message(
             message=request.message,
             session_id=session_id,
             conversation_history=conversation_history,
             use_rag=request.use_rag,
             max_tokens=request.max_tokens,
-            file_id=request.file_id  # Pass file_id to RAG agent
+            collection_name=request.collection_name  # Pass collection_name to RAG agent
         )
         
         response_time = time.time() - start_time
