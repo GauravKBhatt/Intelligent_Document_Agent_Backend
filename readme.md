@@ -159,3 +159,6 @@ docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
    - Open [http://localhost:8000/docs](http://localhost:8000/docs) in your browser.
 
 ---
+ 
+ ** I have made it easier by creating a dockerfile. You can jsut create an image **
+ 
