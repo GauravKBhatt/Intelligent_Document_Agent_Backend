@@ -60,67 +60,78 @@ The system leverages cutting-edge tools such as **LangChain**, **vector database
 | Component         | Technology                |
 |------------------|---------------------------|
 | Framework        | FastAPI                   |
-| Embeddings       | OpenAI / HuggingFace / Cohere |
+| Embeddings       | HuggingFace               |
 | Chunking Methods | Recursive / Semantic / Custom |
-| Vector DB        | Pinecone / Qdrant / Weaviate / Milvus |
+| Vector DB        | Qdrant                    |
 | Memory Layer     | Redis                     |
-| Storage DB       | PostgreSQL / MongoDB / DynamoDB |
-| Agent Framework  | LangChain / LangGraph     |
+| Storage DB       | sqllite                   |
+| Agent Framework  | LangChain                 |
 | Email Service    | SMTP                      |
-
----
-
-##  Experimental Findings
-
-### 🔹 Chunking & Embedding Evaluation
-
-| Chunking Method | Embedding Model | Retrieval Accuracy | Latency (ms) |
-|-----------------|------------------|---------------------|--------------|
-| Recursive       | OpenAI Ada       | 89%                 | 190          |
-| Semantic        | HuggingFace BGE  | 92%                 | 250          |
-| Custom Logic    | Cohere Embed     | 85%                 | 175          |
-
->  **Semantic chunking** showed the best retrieval accuracy, though it had slightly higher latency.
-
----
-
-### 🔹 Similarity Search Evaluation
-
-| Algorithm        | Avg. Recall | Latency (ms) | Notes |
-|------------------|-------------|--------------|-------|
-| Cosine Similarity| 91%         | 200          | Good balance |
-| Dot Product      | 87%         | 160          | Faster, slightly less accurate |
-
->  **Cosine similarity** provided better overall results in Pinecone and Qdrant.
-
----
 
 ##  API Overview
 
-### `/upload/`
+### `/api/v1/files/upload`
 - **Method:** POST
 - **Description:** Upload a `.pdf` or `.txt` file for processing and storage.
-- **Payload:** Multipart/form-data
-- **Response:** JSON with metadata and chunk count
+- **Payload:** Multipart/form-data (`file`, `chunking_method`, `embedding_model`)
+- **Response:** JSON with file metadata, processing status, and chunking/embedding method.
 
-### `/query/`
-- **Method:** POST
-- **Description:** Ask a question. Agent retrieves relevant context and answers intelligently.
-- **Payload:** `{ "question": "..." }`
-- **Response:** JSON with `answer` and `relevant_chunks`
+### `/api/v1/files/status/{file_id}`
+- **Method:** GET
+- **Description:** Get processing status and metadata for an uploaded file.
+- **Response:** JSON with file status, chunk count, processing/embedding times, and errors if any.
 
-### `/book-interview/`
+### `/api/v1/files/files`
+- **Method:** GET
+- **Description:** List all uploaded files, optionally filtered by status.
+- **Response:** JSON with a list of files and their metadata.
+
+### `/api/v1/files/files/{file_id}`
+- **Method:** DELETE
+- **Description:** Delete a file and all associated data (vectors, chunks, metadata).
+- **Response:** JSON message confirming deletion.
+
+### `/api/v1/files/performance/embeddings`
+- **Method:** GET
+- **Description:** Get cached performance metrics for different embedding models and chunking methods.
+- **Response:** JSON with model/method performance stats.
+
+### `/api/v1/files/performance/{file_id}`
+- **Method:** GET
+- **Description:** Get actual chunking and embedding performance for a specific uploaded file.
+- **Response:** JSON with file-specific performance metrics.
+
+### `/api/v1/rag/chat`
 - **Method:** POST
+- **Description:** Chat with the RAG agent. Maintains session context and can use RAG over uploaded documents.
 - **Payload:** 
   ```json
   {
-    "name": "John Doe",
-    "email": "john@example.com",
-    "date": "2025-06-25",
-    "time": "14:00"
+    "message": "string",
+    "session_id": "string (optional)",
+    "use_rag": true,
+    "max_tokens": 500,
+    "collection_name": "string (optional)"
   }
   ```
-- **Response:** JSON with booking confirmation details
+- **Response:** JSON with agent response, session ID, sources, tools used, and response time.
+
+### `/api/v1/rag/book-interview`
+- **Method:** POST
+- **Description:** Book an interview with the agent's assistance.
+- **Payload:** 
+  ```json
+  {
+    "full_name": "Your Name",
+    "email": "yourgmail@gmail.com",
+    "email_password": "your-app-password",
+    "destination_email": "recipient@example.com",
+    "interview_date": "YYYY-MM-DD",
+    "interview_time": "HH:MM",
+    "message": "Looking forward to the interview."
+  }
+  ```
+- **Response:** JSON with booking ID, status, message, and confirmation status.
 
 ---
 
